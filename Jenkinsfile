@@ -31,7 +31,7 @@ pipeline {
 
                     sleep 3
 
-                    curl -fsS http://127.0.0.1:18081/ | grep -q "Welcome to My Docker CI/CD Project!"
+                    curl -fsS http://127.0.0.1:18081/ | grep -q "Your Project is Completed"
                 '''
             }
         }
