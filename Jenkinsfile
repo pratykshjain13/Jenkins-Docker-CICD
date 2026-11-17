@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -5,64 +6,52 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Checking out source code from GitHub'
+                echo 'Checking source code'
                 sh 'ls -l'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building Docker Image'
-                sh 'docker build -t webapp:v1 .'
+                echo 'Building Docker Image using Compose'
+                sh 'docker compose build'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Testing Docker Container'
+                echo 'Testing application using Docker Compose'
 
                 sh '''
-                    docker rm -f webapp-test || true
-
-                    docker run -d \
-                    --name webapp-test \
-                    -p 18081:80 \
-                    webapp:v1
+                    docker compose up -d
 
                     sleep 3
 
-                    curl -fsS http://127.0.0.1:18081/ | grep -q "Your Project is Completed"
+                    curl -fsS http://127.0.0.1:8083/ | grep -q "Your Project is Completed"
                 '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying Application'
+                echo 'Deploying application using Docker Compose'
 
                 sh '''
-                    docker rm -f webapp || true
-
-                    docker run -d \
-                    --name webapp \
-                    -p 8082:80 \
-                    webapp:v1
+                    docker compose up -d
+                    docker compose ps
                 '''
             }
         }
     }
 
     post {
-        always {
-            sh 'docker rm -f webapp-test || true'
-        }
-
         success {
-            echo 'CI/CD Pipeline Completed Successfully!'
+            echo 'Docker Compose CI/CD Pipeline Completed Successfully!'
         }
 
         failure {
-            echo 'CI/CD Pipeline Failed!'
+            echo 'Docker Compose CI/CD Pipeline Failed!'
         }
     }
 }
+

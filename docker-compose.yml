@@ -1,0 +1,9 @@
+services:
+  webapp:
+    build: .
+    image: webapp:v1
+    container_name: webapp2
+    ports:
+      - "8083:80"
+
+    restart: unless-stopped
